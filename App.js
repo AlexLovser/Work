@@ -1,19 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity, ActionSheetIOS, Platform, Alert } from 'react-native';
 import Item from './components/Item';
 import ModalInput from './components/ModalInput';
+import { InitialTasks, mainColor } from './src/data';
+
 
 export default function App() {
-	const [data, setData] = useState(DATA)
-	const [appearenceType, setAppearenceType] = useState(0)
+	const [data, setData] = useState(InitialTasks);
+	const [appearenceType, setAppearenceType] = useState(0);
 	const [modalVisible, setModalVisible] = useState(false);
 
-	// useEffect(() => {
-	// 	console.log(data)
-	// }, [data])
-	
-	
 	const appearenceText = {
 		0: 'Все задания',
 		1: 'Выполненные задания',
@@ -85,28 +82,20 @@ export default function App() {
 		
 		setData(
 			oldData => {
-				if (Boolean(title) && Boolean(task)) {
-					setModalVisible(false)
-					let newData = [...oldData]
-					newData = newData.concat(
-						{
-							title,
-							task,
-							acheived: false
-						}
-					)
-					return newData
-				} else {
-					return oldData
-				}
-				
+				setModalVisible(false)
+				return [...oldData].concat(
+					{
+						title,
+						task,
+						acheived: false
+					}
+				)
 		}
 		)
 		
 	}	
 
 	const onLongPress = () => {
-		console.log(Platform.OS)
 		if (Platform.OS == 'ios') {
 			ActionSheetIOS.showActionSheetWithOptions(
 				{
@@ -115,9 +104,9 @@ export default function App() {
 					userInterfaceStyle: 'light',
 					title: 'Выберите фильтр',
 					message: 'Фильтры формируют список заданий',
-					tintColor: '#3785CC'
+					tintColor: mainColor
 				},
-				buttonIndex => setAppearenceType(buttonIndex - 1)
+				buttonIndex => buttonIndex != 0 && setAppearenceType(buttonIndex - 1)
 			);
 		} else {
 			Alert.alert(
@@ -132,21 +121,21 @@ export default function App() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<StatusBar style="auto" />
-			<View style={{height: 128, alignItems: 'center', justifyContent: 'center', width: '100%'}}>
+			<View style={{height: '15%', alignItems: 'center', justifyContent: 'center', width: '100%'}}>
 				<TouchableOpacity style={styles.appearenceChange} onPress={changeType} onLongPress={onLongPress}>
 					<Text style={styles.appearenceText}>
 						{appearenceText}
 					</Text>
 				</TouchableOpacity>
 			</View>
-			<View style={{width: '90%'}}>
+			<View style={{width: '90%', maxHeight: '70%'}}>
 				{
 					thereAreSomeThingsToShow() ? 
 					<FlatList
 						data={data}
 						keyExtractor={() => (Math.random() * 100).toString()}
 						renderItem={filter}
-						style={styles.flat}
+						style={[styles.flat, {}]}
 					/>
 					:
 					<Text>Здесь пока что пусто...</Text>
@@ -177,14 +166,14 @@ const styles = StyleSheet.create({
 	appearenceChange: {
 		width: '90%',
 		height: 36,
-		borderColor: '#3785CC',
+		borderColor: mainColor,
 		borderRadius: 10,
 		borderWidth: 2,
 		alignItems: 'center',
 		justifyContent: 'center'
 	},
 	appearenceText: {
-		color: '#3785CC',
+		color: mainColor,
 		fontWeight: '500',
 		fontSize: 14
 	},
@@ -192,7 +181,7 @@ const styles = StyleSheet.create({
 		width: '90%',
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: '#3785CC',
+		backgroundColor: mainColor,
 		height: 55,
 		borderRadius: 10,
 		marginVertical: 20
@@ -200,14 +189,6 @@ const styles = StyleSheet.create({
 	addText: {
 		fontSize: 16,
 		fontWeight: '500',
-		color: 'white'
+		color: 'white',
 	}
 });
-
-
-const DATA = [
-  {title: 'Математика', task: 'Стр 4, упражнение 4', acheived: false},
-  {title: 'Русский язык', task: 'Стр 4, упражнение 4', acheived: false},
-  {title: 'ИЗО', task: 'Подготовить клей, ножницы, вл. салфетки, цветную бумагу, ножницы, шерстняые нитки4', acheived: false},
-  {title: 'Литература', task: 'Стр 4, упражнение 4', acheived: false},
-]

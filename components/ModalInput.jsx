@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Modal, TextInput, TouchableOpacity, SafeAreaVie
 import React, {useState} from 'react'
 
 
+
 export default function ModalInput(props) {
     const [title, setTitle] = useState('')
     const [task, setTask] = useState('')
@@ -37,9 +38,13 @@ export default function ModalInput(props) {
                                 <Text style={[styles.buttonText, {color: '#C3C3C5'}]}>Отмена</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => {
-                                setTitle('')
-                                setTask('')
-                                props.handle({title, task})
+                                if (Boolean(title) && Boolean(task)) {
+                                    setTitle('')
+                                    setTask('')
+                                    props.handle({title, task})
+                                }
+                                
+                                
                             }}>
                                 <Text style={[styles.buttonText, {color: '#3784CC'}]}>Сохранить</Text>
                             </TouchableOpacity>
