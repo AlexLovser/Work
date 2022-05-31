@@ -1,10 +1,18 @@
-import { StyleSheet, Text, View, Modal, TextInput, TouchableOpacity, SafeAreaView } from 'react-native'
+import { StyleSheet, Text, View, Modal, TextInput, TouchableOpacity, SafeAreaView, useWindowDimensions, Keyboard } from 'react-native'
 import React, {useState} from 'react'
 
 
 export default function ModalInput(props) {
     const [title, setTitle] = useState('')
     const [task, setTask] = useState('')
+    const [fieldWidth, setFieldWidth] = useState(0)
+
+    const {width} = useWindowDimensions()
+
+    const onLayout = event => {
+        let {width} = event.nativeEvent.layout;
+        setFieldWidth(width)
+      }
 
     return (
         <Modal
@@ -15,20 +23,24 @@ export default function ModalInput(props) {
             
         >
             <SafeAreaView style={styles.centeredView}>
-                    <View style={styles.modalView}>
+                    <View style={[styles.modalView, {marginTop: Math.floor((width - fieldWidth) / 2)}]} onLayout={onLayout}>
                         <View style={{alignItems: 'center'}}>
                             <Text style={styles.title}>Добавить предмет</Text>
                             <Text style={styles.description}>Укажите заголовок и задание</Text>
                         </View>
                         
-                        <TextInput placeholder='Заголовок' style={styles.input} value={title} onChangeText={setTitle}/>
+                        <TextInput placeholder='Заголовок' style={styles.input} value={title} onChangeText={setTitle} autoFocus={true}/>
                         <TextInput placeholder='Задание' style={styles.input} value={task} onChangeText={setTask}/>
 
                         <View style={styles.lowerBlock}>
                             <TouchableOpacity onPress={() => props.disable()}>
                                 <Text style={[styles.buttonText, {color: '#C3C3C5'}]}>Отмена</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => props.handle({title, task})}>
+                            <TouchableOpacity onPress={() => {
+                                setTitle('')
+                                setTask('')
+                                props.handle({title, task})
+                            }}>
                                 <Text style={[styles.buttonText, {color: '#3784CC'}]}>Сохранить</Text>
                             </TouchableOpacity>
                         </View>
@@ -44,12 +56,12 @@ export default function ModalInput(props) {
 const styles = StyleSheet.create({
     centeredView: {
         flex: 2,
-        justifyContent: 'space-around',
+        justifyContent: 'flex-start',
         alignItems: "center",
         backgroundColor: 'rgba(0, 0, 0, 0.7)'
     },
     modalView: {
-        width: 270,
+        width: '70%',
         height: 219,
         margin: 20,
         backgroundColor: "#f7f7f7",

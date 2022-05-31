@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity, ActionSheetIOS, Platform, Alert } from 'react-native';
 import Item from './components/Item';
 import ModalInput from './components/ModalInput';
 
@@ -8,6 +8,11 @@ export default function App() {
 	const [data, setData] = useState(DATA)
 	const [appearenceType, setAppearenceType] = useState(0)
 	const [modalVisible, setModalVisible] = useState(false);
+
+	// useEffect(() => {
+	// 	console.log(data)
+	// }, [data])
+	
 	
 	const appearenceText = {
 		0: 'Все задания',
@@ -57,13 +62,13 @@ export default function App() {
 		let inProcess = 0
 
 		for (let elem in data) {
+			elem = data[elem]
 			if (elem.acheived) {
 				finished++
 			} else {
 				inProcess++
 			}
 		}
-
 		return (appearenceType == 0 && data.length !== 0) || (appearenceType == 1 && finished !== 0) || (appearenceType == 2 && inProcess !== 0)
 
 	}
@@ -99,11 +104,36 @@ export default function App() {
 		)
 		
 	}	
+
+	const onLongPress = () => {
+		console.log(Platform.OS)
+		if (Platform.OS == 'ios') {
+			ActionSheetIOS.showActionSheetWithOptions(
+				{
+					options: ["Отмена", "Все задания", "Выполненные задания", 'Не выполненные задания'],
+					cancelButtonIndex: 0,
+					userInterfaceStyle: 'light',
+					title: 'Выберите фильтр',
+					message: 'Фильтры формируют список заданий',
+					tintColor: '#3785CC'
+				},
+				buttonIndex => setAppearenceType(buttonIndex - 1)
+			);
+		} else {
+			Alert.alert(
+				'Эта функция недоступна!',
+				'К сожалению такие меню доступны только на IOS',
+				['Ok']
+			)
+		}
+		
+	};
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<StatusBar style="auto" />
 			<View style={{height: 128, alignItems: 'center', justifyContent: 'center', width: '100%'}}>
-				<TouchableOpacity style={styles.appearenceChange} onPress={changeType}>
+				<TouchableOpacity style={styles.appearenceChange} onPress={changeType} onLongPress={onLongPress}>
 					<Text style={styles.appearenceText}>
 						{appearenceText}
 					</Text>
@@ -114,7 +144,7 @@ export default function App() {
 					thereAreSomeThingsToShow() ? 
 					<FlatList
 						data={data}
-						keyExtractor={item => (Math.random() * 100).toString()}
+						keyExtractor={() => (Math.random() * 100).toString()}
 						renderItem={filter}
 						style={styles.flat}
 					/>
