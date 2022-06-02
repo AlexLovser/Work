@@ -3,14 +3,13 @@ import React from 'react'
 import { Ionicons } from '@expo/vector-icons'; 
 import { useDispatch } from 'react-redux';
 import { toggleElement, deleteElement } from '../store/workSlice';
-import { actionFunction } from '../types';
 import { singleTaskType } from '../interfaces';
 
 
 export default function Item({item}: {item: singleTaskType}) {
   const dispatch = useDispatch()
   const {id, acheived, title, task} = item;
-  const makeAction = (func: actionFunction) => dispatch(func(id)) 
+  const makeAction = (func: any) => dispatch(func(id)) 
 
   return (
     <View style={[styles.container]}>

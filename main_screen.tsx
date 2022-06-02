@@ -3,7 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity, ActionSheetIOS, Platform, Alert, Modal } from 'react-native';
 import Item from './components/Item';
 import ModalInput from './components/ModalInput';
-import { mainColor } from './src/data';
 import { useSelector } from 'react-redux';
 import { singleTaskType, tasksType } from './interfaces';
 
@@ -68,7 +67,7 @@ export default function MainScreen() {
 					userInterfaceStyle: 'light',
 					title: 'Выберите фильтр',
 					message: 'Фильтры формируют список заданий',
-					tintColor: mainColor
+					tintColor: '#3785CC'
 				},
 				buttonIndex => buttonIndex != 0 && setAppearenceType(buttonIndex - 1)
 			);
@@ -138,14 +137,14 @@ const styles = StyleSheet.create({
 	appearenceChange: {
 		width: '90%',
 		height: 36,
-		borderColor: mainColor,
+		borderColor: '#3785CC',
 		borderRadius: 10,
 		borderWidth: 2,
 		alignItems: 'center',
 		justifyContent: 'center'
 	},
 	appearenceText: {
-		color: mainColor,
+		color: '#3785CC',
 		fontWeight: '500',
 		fontSize: 14
 	},
@@ -153,7 +152,7 @@ const styles = StyleSheet.create({
 		width: '90%',
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: mainColor,
+		backgroundColor: '#3785CC',
 		height: 55,
 		borderRadius: 10,
 		marginVertical: 20

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, useWindowDimensions, Modal } from 'react-native'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, useWindowDimensions } from 'react-native'
 import React, {useState,} from 'react'
 import { useDispatch } from 'react-redux'
 import { addElement } from '../store/workSlice'

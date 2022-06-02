@@ -10,3 +10,20 @@ export interface tasksType {
 		tasks: Array<singleTaskType>
 	}
 }
+
+export interface Istate {
+    tasks: Array<singleTaskType>
+}
+
+export interface Iaction {
+	payload: {
+		id: string,
+	}
+}
+
+export interface IaddAction {
+	payload: {
+		title: string
+		task: string
+	}
+}
