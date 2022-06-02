@@ -23,15 +23,13 @@ export const workSlice = createSlice({
             
         },
         toggleElement(state: Istate, action: Iaction) {
-            const element = state.tasks.find(task => task.id == action.payload.id)
+            const element = state.tasks.find(task => task.id == action.payload)
             if (element) {
                 element.acheived = !element.acheived
             }
-            
-            
         },
         deleteElement(state: Istate, action: Iaction) {
-            state.tasks = state.tasks.filter(task => task.id === action.payload.id)
+            state.tasks = state.tasks.filter(task => task.id != action.payload)
         }
     },
 })

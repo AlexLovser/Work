@@ -4,7 +4,7 @@ import store from './store/store';
 import MainScreen from './main_screen';
 
 
-export const App: React.FC = () => {
+export default function App() {
 	return (
 		<Provider store={store}>
 			<MainScreen />

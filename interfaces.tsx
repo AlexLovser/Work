@@ -16,9 +16,7 @@ export interface Istate {
 }
 
 export interface Iaction {
-	payload: {
-		id: string,
-	}
+	payload: string
 }
 
 export interface IaddAction {
