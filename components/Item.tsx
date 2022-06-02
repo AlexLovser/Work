@@ -1,34 +1,41 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React, { } from 'react'
+import React from 'react'
 import { Ionicons } from '@expo/vector-icons'; 
-import { mainColor } from '../src/data'
+import { useDispatch } from 'react-redux';
+import { toggleElement, deleteElement } from '../store/workSlice';
+import { actionFunction } from '../types';
+import { singleTaskType } from '../interfaces';
 
 
-export default function Item(props) {
-  const color = props.acheived ? '#469D3E' : 'white'
-  const border = props.acheived ? '#469D3E' : 'black'
+export default function Item({item}: {item: singleTaskType}) {
+  const dispatch = useDispatch()
+  const {id, acheived, title, task} = item;
+  const makeAction = (func: actionFunction) => dispatch(func(id)) 
 
   return (
     <View style={[styles.container]}>
-      <TouchableOpacity style={styles.small} onPress={props.updateMethod}>
-        <View style={[styles.checkbox, {backgroundColor: color, borderColor: border}]}>
-          <Ionicons name='checkmark-sharp' size={25} color={props.acheived ? 'white' : '#bcbcbc'} />
+      <TouchableOpacity style={styles.small} onPress={() => makeAction(toggleElement)}>
+        <View style={[styles.checkbox, {backgroundColor: acheived ? '#469D3E' : 'white', borderColor: acheived ? '#469D3E' : 'black'}]}>
+          <Ionicons name='checkmark-sharp' size={25} color={acheived ? 'white' : '#bcbcbc'} />
         </View>
       </TouchableOpacity>
       
       <View style={{width: '70%'}}>
         <View>
-          <Text style={styles.title}>{props.title}</Text>
+          <Text style={styles.title}>{title}</Text>
         </View>
         <View>
-          <Text style={[styles.task, props.acheived && {textDecorationLine: 'line-through'}]}>{props.task}</Text>
+          <Text style={[styles.task, acheived && {textDecorationLine: 'line-through'}]}>
+            {
+              task.length > 82 ? task.slice(79) + '...' : task
+            }
+          </Text>
         </View>
-        
       </View>
 
       <View style={styles.small}>
         <View style={styles.bin}>
-          <Ionicons name='trash-outline' size={25} color='#6F767E' onPress={props.deleteMethod}/>
+          <Ionicons name='trash-outline' size={25} color='#6F767E' onPress={() => makeAction(deleteElement)}/>
         </View>
       </View>
     </View>

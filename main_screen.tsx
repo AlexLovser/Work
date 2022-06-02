@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity, ActionSheetIOS, Platform, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity, ActionSheetIOS, Platform, Alert, Modal } from 'react-native';
 import Item from './components/Item';
 import ModalInput from './components/ModalInput';
-import { InitialTasks, mainColor } from './src/data';
+import { mainColor } from './src/data';
+import { useSelector } from 'react-redux';
+import { singleTaskType, tasksType } from './interfaces';
 
 
-export default function App() {
-	const [data, setData] = useState(InitialTasks);
+export default function MainScreen() {
+    const data = useSelector((state: tasksType) => state.tasks.tasks)
 	const [appearenceType, setAppearenceType] = useState(0);
 	const [modalVisible, setModalVisible] = useState(false);
 
@@ -17,31 +19,8 @@ export default function App() {
 		2: 'Не выполненные задания'
 	}[appearenceType]
 
-	const filter = ({item}) => {
-		let index = data.indexOf(item)
-
-		updateMethod = () => {
-			setData(
-				oldData => {
-					let newData = [...oldData]
-					newData[index].acheived = !newData[index].acheived
-					return newData
-				}
-			)
-		}
-
-		deleteMethod = () => {
-			setData(
-				oldData => {
-					let newData = [...oldData]
-					newData.splice(index, 1)
-					return newData
-				}
-			)
-		}
-
-		let element = <Item {...item} updateMethod={updateMethod} deleteMethod={deleteMethod}/>
-
+	const filter = ({item}: {item: singleTaskType}) => {
+		let element = <Item item={item}/>
 		switch(appearenceType) {
 			case 0:
 			 	return element
@@ -55,11 +34,10 @@ export default function App() {
 	}
 	
 	const thereAreSomeThingsToShow = () => {
-		let finished = 0
-		let inProcess = 0
+		let finished: number = 0
+		let inProcess: number = 0
 
-		for (let elem in data) {
-			elem = data[elem]
+		for (let elem of data) {
 			if (elem.acheived) {
 				finished++
 			} else {
@@ -78,23 +56,9 @@ export default function App() {
 		}
 	}
 
-	const onSubmit = ({title, task}) => {
-		
-		setData(
-			oldData => {
-				setModalVisible(false)
-				return [...oldData].concat(
-					{
-						title,
-						task,
-						acheived: false
-					}
-				)
-		}
-		)
-		
-	}	
+	const modalToggle = () => {setModalVisible(prev => !prev)}
 
+	
 	const onLongPress = () => {
 		if (Platform.OS == 'ios') {
 			ActionSheetIOS.showActionSheetWithOptions(
@@ -112,43 +76,51 @@ export default function App() {
 			Alert.alert(
 				'Эта функция недоступна!',
 				'К сожалению такие меню доступны только на IOS',
-				['Ok']
+				[
+					{ text: "OK", onPress: () => {} }
+				]
 			)
 		}
 		
 	};
 
 	return (
-		<SafeAreaView style={styles.container}>
-			<StatusBar style="auto" />
-			<View style={{height: '15%', alignItems: 'center', justifyContent: 'center', width: '100%'}}>
-				<TouchableOpacity style={styles.appearenceChange} onPress={changeType} onLongPress={onLongPress}>
-					<Text style={styles.appearenceText}>
-						{appearenceText}
-					</Text>
-				</TouchableOpacity>
-			</View>
-			<View style={{width: '90%', maxHeight: '70%'}}>
-				{
-					thereAreSomeThingsToShow() ? 
-					<FlatList
-						data={data}
-						keyExtractor={() => (Math.random() * 100).toString()}
-						renderItem={filter}
-						style={[styles.flat, {}]}
-					/>
-					:
-					<Text>Здесь пока что пусто...</Text>
-				}
-			</View>
+        <SafeAreaView style={styles.container}>
+            <StatusBar style="auto" />
+            <View style={{height: '15%', alignItems: 'center', justifyContent: 'center', width: '100%'}}>
+                <TouchableOpacity style={styles.appearenceChange} onPress={changeType} onLongPress={onLongPress}>
+                    <Text style={styles.appearenceText}>
+                        {appearenceText}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+            <View style={{width: '90%', maxHeight: '70%'}}>
+                {
+                    thereAreSomeThingsToShow() ? 
+                    <FlatList
+                        data={data}
+                        keyExtractor={() => (Math.random() * 100).toString()}
+                        renderItem={filter}
+                        style={[styles.flat, {}]}
+                    />
+                    :
+                    <Text>Здесь пока что пусто...</Text>
+                }
+            </View>
 
-			<TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-				<Text style={styles.addText}>Добавить</Text>
-			</TouchableOpacity>
-			
-			<ModalInput show={modalVisible} disable={() => setModalVisible(false)} handle={onSubmit}/>
-			
-		</SafeAreaView>
+            <TouchableOpacity style={styles.addButton} onPress={modalToggle}>
+                <Text style={styles.addText}>Добавить</Text>
+            </TouchableOpacity>
+
+            <Modal
+                animationType='fade'
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={modalToggle}
+            >
+                <ModalInput disable={modalToggle} />
+            </Modal>
+        </SafeAreaView>
 	);
 }
 
